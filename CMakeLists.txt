@@ -31,7 +31,7 @@ message( STATUS "CMake version ${CMAKE_VERSION}" )
 message( STATUS "System ${CMAKE_SYSTEM_NAME}" )
 message( STATUS "Processor ${CMAKE_SYSTEM_PROCESSOR}" )
 
-cmake_minimum_required(VERSION 2.8.6)
+cmake_minimum_required(VERSION 2.8.12)
 if (${CMAKE_VERSION} VERSION_LESS "3.0.0")
   project(cryptopp)
   set(cryptopp_VERSION_MAJOR 8)
@@ -194,9 +194,6 @@ if (DISABLE_POWER8)
 endif ()
 if (DISABLE_POWER9)
   list(APPEND CRYPTOPP_COMPILE_DEFINITIONS CRYPTOPP_DISABLE_POWER9)
-endif ()
-if (NOT CRYPTOPP_DATA_DIR STREQUAL "")
-  list(APPEND CRYPTOPP_COMPILE_DEFINITIONS "CRYPTOPP_DATA_DIR=${CRYPTOPP_DATA_DIR}")
 endif ()
 
 ###############################################################################
@@ -1279,7 +1276,7 @@ endif ()
 #============================================================================
 
 set(export_name "cryptopp-targets")
-
+set(conditional_append "")
 # Runtime package
 if (BUILD_SHARED)
   export(TARGETS cryptopp-shared FILE ${export_name}.cmake )
@@ -1291,11 +1288,12 @@ if (BUILD_SHARED)
       LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
       ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   )
+  set(conditional_append "APPEND")
 endif ()
 
 # Development package
 if (BUILD_STATIC)
-  export(TARGETS cryptopp-static FILE ${export_name}.cmake )
+  export(TARGETS cryptopp-static ${conditional_append} FILE ${export_name}.cmake )
   install(TARGETS cryptopp-static EXPORT ${export_name} DESTINATION ${CMAKE_INSTALL_LIBDIR})
 endif ()
 install(FILES ${cryptopp_HEADERS} DESTINATION include/cryptopp)
